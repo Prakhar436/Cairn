@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Job Tracker</title>
+<title>Cairn | Job Tracker</title>
 <style>
   /* ---------------------------------------------------------
      TOKENS
      --------------------------------------------------------- */
   :root, [data-theme="dark"] {
-    --bg: #17181A;
-    --surface: #202224;
-    --surface-2: #292B2E;
-    --border: #35373A;
-    --text: #EDEDEA;
-    --text-muted: #9A9C9E;
+    --bg: #11201B;
+    --surface: #1B2C24;
+    --surface-2: #223528;
+    --border: #2C4034;
+    --text: #EDEDE3;
+    --text-muted: #93A79A;
     --accent: #5FB2D1;
     --accent-strong: #4FA3C4;
     --accent-contrast: #06151A;
@@ -32,12 +32,12 @@
   }
 
   [data-theme="light"] {
-    --bg: #EFEFEF;
+    --bg: #EEF2EF;
     --surface: #FFFFFF;
-    --surface-2: #E6E6E6;
-    --border: #D8D8D8;
-    --text: #1A1A1A;
-    --text-muted: #5C5C5C;
+    --surface-2: #E4EAE4;
+    --border: #D3DBD5;
+    --text: #16241D;
+    --text-muted: #55665C;
     --accent: #2C7A9E;
     --accent-strong: #226483;
     --accent-contrast: #FFFFFF;
@@ -69,11 +69,6 @@
 
   @media (prefers-reduced-motion: no-preference) {
     body, .btn, .step-dot, .step-line, .panel, input, textarea { transition: background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .18s ease; }
-
-    .entry { transition: background-color .28s ease, border-color .28s ease, margin-bottom .28s ease, padding-bottom .28s ease, border-radius .28s ease; }
-    .entry .spine { transition: bottom .28s ease; }
-    .details-wrap { transition: grid-template-rows .32s cubic-bezier(.4,0,.2,1), visibility 0s linear .32s; }
-    .entry.expanded .details-wrap { transition: grid-template-rows .32s cubic-bezier(.4,0,.2,1), visibility 0s linear 0s; }
   }
 
   .wrap {
@@ -247,23 +242,17 @@
 
   .entry {
     position: relative;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    margin-bottom: 10px;
-    padding-bottom: 0;
   }
   .entry.collapsed {
     background: color-mix(in srgb, var(--row-color) 16%, var(--surface));
-    border-color: color-mix(in srgb, var(--row-color) 50%, var(--border));
+    border: 1px solid color-mix(in srgb, var(--row-color) 50%, var(--border));
+    border-radius: var(--radius);
+    margin-bottom: 10px;
     overflow: hidden;
   }
   .entry.expanded {
-    background: transparent;
-    border-color: transparent transparent var(--border) transparent;
-    border-radius: 0;
-    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
     padding-bottom: 18px;
-    overflow: visible;
   }
   .entry .spine {
     position: absolute;
@@ -281,8 +270,8 @@
     gap: 10px;
     padding: 14px 14px 14px 20px;
   }
-  .entry.collapsed .entry-header { cursor: pointer; }
-  .entry.collapsed .entry-header:hover { background: rgba(255, 255, 255, 0.04); }
+  .entry-header.clickable { cursor: pointer; }
+  .entry-header.clickable:hover { background: rgba(255, 255, 255, 0.04); }
 
   .chevron-btn {
     flex-shrink: 0;
@@ -303,13 +292,12 @@
   .entry.expanded .chevron-btn svg { transform: rotate(90deg); }
 
   .entry-summary {
-    display: none;
+    display: flex;
     align-items: baseline;
     gap: 10px;
     flex: 1;
     min-width: 0;
   }
-  .entry.collapsed .entry-summary { display: flex; }
   .summary-company {
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     font-weight: 600;
@@ -329,8 +317,7 @@
   }
   .notes-icon { color: var(--text-muted); flex-shrink: 0; display: inline-flex; }
 
-  .entry-fields { display: none; flex: 1; min-width: 0; }
-  .entry.expanded .entry-fields { display: block; }
+  .entry-fields { flex: 1; min-width: 0; }
 
   .row-badge {
     display: flex;
@@ -345,16 +332,7 @@
   }
   .row-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--row-color); }
 
-  .details-wrap {
-    display: grid;
-    grid-template-rows: 0fr;
-    visibility: hidden;
-  }
-  .entry.expanded .details-wrap {
-    grid-template-rows: 1fr;
-    visibility: visible;
-  }
-  .entry-details { overflow: hidden; min-height: 0; padding: 0 14px 0 20px; }
+  .entry-details { padding: 0 14px 0 20px; }
 
   .company-input {
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -467,17 +445,17 @@
     <div class="brand">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l6-14 4 8 3-6 5 12"/><circle cx="9" cy="6" r="1.3" fill="currentColor" stroke="none"/></svg>
       <div class="brand-text">
-        <h1>Job Tracker</h1>
+        <h1>Cairn</h1>
         <p class="tagline">Every application, one trail.</p>
       </div>
     </div>
     <div class="header-actions">
       <button class="btn icon" id="themeToggle" title="Switch theme" aria-label="Switch theme"></button>
       <button class="btn icon" id="exportBtn" title="Export backup" aria-label="Export backup">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
       </button>
       <button class="btn icon" id="importBtn" title="Import backup" aria-label="Import backup">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg>
       </button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
       <button class="btn primary" id="newAppBtn">
@@ -758,7 +736,7 @@
     var a = document.createElement("a");
     var stamp = new Date().toISOString().slice(0, 10);
     a.href = url;
-    a.download = "job-tracker-backup-" + stamp + ".json";
+    a.download = "cairn-backup-" + stamp + ".json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -857,64 +835,65 @@
     var chevron = '<button class="chevron-btn" data-action="toggle" data-id="' + job.id + '" aria-label="' + (expanded ? "Collapse" : "Expand") + '" aria-expanded="' + expanded + '">' + iconChevronRight() + "</button>";
     var badgeHtml = '<div class="row-badge"><span class="dot"></span>' + escapeHtml(badgeText) + "</div>";
 
-    // Both the summary (collapsed) and fields (expanded) views are always
-    // rendered; CSS shows/hides the right one based on the .entry's
-    // collapsed/expanded class. This keeps the row's DOM node stable across
-    // toggles so the accordion transition can actually animate.
-    var summaryHtml =
-      '<div class="entry-summary" data-action="toggle" data-id="' + job.id + '">' +
-        '<span class="summary-company">' + escapeHtml(job.company || "Untitled") + "</span>" +
-        '<span class="summary-stage">' + escapeHtml(currentLabel) + "</span>" +
-        (job.notes ? '<span class="notes-icon" title="Has notes">' + iconNote() + "</span>" : "") +
-      "</div>";
-
-    var fieldsHtml =
-      '<div class="entry-fields">' +
-        '<input class="company-input" data-field="company" data-id="' + job.id + '" value="' + escapeHtml(job.company) + '" placeholder="Company name" aria-label="Company name">' +
-        '<div class="url-row">' +
-          iconExternal() +
-          '<input class="url-input" data-field="url" data-id="' + job.id + '" value="' + escapeHtml(urlDisplay) + '" placeholder="Add a link to the posting" aria-label="Job posting URL">' +
-          (job.url ? '<a class="open-link" href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener noreferrer" title="Open link" aria-label="Open link">' + iconExternal() + "</a>" : "") +
-        "</div>" +
-      "</div>";
-
-    var headerHtml = '<div class="entry-header">' + chevron + summaryHtml + fieldsHtml + badgeHtml + "</div>";
-
-    var navButtons = "";
-    if (isActive) {
-      navButtons =
-        '<div class="nav-actions">' +
-          '<button class="btn" data-action="prev" data-id="' + job.id + '" ' + (atStart ? "disabled" : "") + '>' + iconChevronLeft() + " Back</button>" +
-          '<button class="btn" data-action="next" data-id="' + job.id + '" ' + (atEnd ? "disabled" : "") + ">Next " + iconChevronRight() + "</button>" +
+    var middleHtml;
+    if (expanded) {
+      middleHtml =
+        '<div class="entry-fields">' +
+          '<input class="company-input" data-field="company" data-id="' + job.id + '" value="' + escapeHtml(job.company) + '" placeholder="Company name" aria-label="Company name">' +
+          '<div class="url-row">' +
+            iconExternal() +
+            '<input class="url-input" data-field="url" data-id="' + job.id + '" value="' + escapeHtml(urlDisplay) + '" placeholder="Add a link to the posting" aria-label="Job posting URL">' +
+            (job.url ? '<a class="open-link" href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener noreferrer" title="Open link" aria-label="Open link">' + iconExternal() + "</a>" : "") +
+          "</div>" +
         "</div>";
     } else {
-      navButtons = '<div class="nav-actions"><button class="btn ghost" data-action="reopen" data-id="' + job.id + '">Reopen application</button></div>';
+      middleHtml =
+        '<div class="entry-summary">' +
+          '<span class="summary-company">' + escapeHtml(job.company || "Untitled") + "</span>" +
+          '<span class="summary-stage">' + escapeHtml(currentLabel) + "</span>" +
+          (job.notes ? '<span class="notes-icon" title="Has notes">' + iconNote() + "</span>" : "") +
+        "</div>";
     }
 
-    var terminalButtons = "";
-    if (isActive) {
-      terminalButtons =
-        '<button class="btn ghost" data-action="complete" data-id="' + job.id + '">Mark as completed</button>' +
-        '<button class="btn ghost" data-action="close" data-id="' + job.id + '">Close application</button>';
-    }
+    var headerClass = "entry-header" + (expanded ? "" : " clickable");
+    var headerAttrs = expanded ? "" : (' data-action="toggle" data-id="' + job.id + '"');
+    var headerHtml = '<div class="' + headerClass + '"' + headerAttrs + ">" + chevron + middleHtml + badgeHtml + "</div>";
 
-    // Also always rendered (not just when expanded) so the height animation
-    // has stable content to transition between; .details-wrap collapses it
-    // to zero height and hides it via CSS when the entry is collapsed.
-    var detailsHtml =
-      '<div class="details-wrap"><div class="entry-details">' +
-        stepperHtml(job) +
-        '<div class="step-caption">' + WORKFLOW_LABEL[job.workflow] + ", currently <strong>" + escapeHtml(currentLabel) + "</strong> (step " + (job.stepIndex + 1) + " of " + steps.length + ")</div>" +
-        '<textarea class="notes-input" data-field="notes" data-id="' + job.id + '" placeholder="Add a note...">' + escapeHtml(job.notes || "") + "</textarea>" +
-        '<div class="entry-bottom">' +
-          navButtons +
-          '<div class="meta-actions">' +
-            '<span class="meta-text">' + metaText + "</span>" +
-            terminalButtons +
-            '<button class="btn danger-ghost" data-action="delete" data-id="' + job.id + '" title="Delete" aria-label="Delete application">' + iconTrash() + "</button>" +
+    var detailsHtml = "";
+    if (expanded) {
+      var navButtons = "";
+      if (isActive) {
+        navButtons =
+          '<div class="nav-actions">' +
+            '<button class="btn" data-action="prev" data-id="' + job.id + '" ' + (atStart ? "disabled" : "") + '>' + iconChevronLeft() + " Back</button>" +
+            '<button class="btn" data-action="next" data-id="' + job.id + '" ' + (atEnd ? "disabled" : "") + ">Next " + iconChevronRight() + "</button>" +
+          "</div>";
+      } else {
+        navButtons = '<div class="nav-actions"><button class="btn ghost" data-action="reopen" data-id="' + job.id + '">Reopen application</button></div>';
+      }
+
+      var terminalButtons = "";
+      if (isActive) {
+        terminalButtons =
+          '<button class="btn ghost" data-action="complete" data-id="' + job.id + '">Mark as completed</button>' +
+          '<button class="btn ghost" data-action="close" data-id="' + job.id + '">Close application</button>';
+      }
+
+      detailsHtml =
+        '<div class="entry-details">' +
+          stepperHtml(job) +
+          '<div class="step-caption">' + WORKFLOW_LABEL[job.workflow] + ", currently <strong>" + escapeHtml(currentLabel) + "</strong> (step " + (job.stepIndex + 1) + " of " + steps.length + ")</div>" +
+          '<textarea class="notes-input" data-field="notes" data-id="' + job.id + '" placeholder="Add a note...">' + escapeHtml(job.notes || "") + "</textarea>" +
+          '<div class="entry-bottom">' +
+            navButtons +
+            '<div class="meta-actions">' +
+              '<span class="meta-text">' + metaText + "</span>" +
+              terminalButtons +
+              '<button class="btn danger-ghost" data-action="delete" data-id="' + job.id + '" title="Delete" aria-label="Delete application">' + iconTrash() + "</button>" +
+            "</div>" +
           "</div>" +
-        "</div>" +
-      "</div></div>";
+        "</div>";
+    }
 
     return (
       '<div class="entry ' + (expanded ? "expanded" : "collapsed") + '" data-id="' + job.id + '" style="--row-color:' + rowColor + '">' +
@@ -994,18 +973,8 @@
     var action = btn.getAttribute("data-action");
 
     if (action === "toggle") {
-      var willExpand = !expandedIds.has(id);
-      if (willExpand) expandedIds.add(id); else expandedIds.delete(id);
-      var entryEl = btn.closest(".entry");
-      if (entryEl) {
-        entryEl.classList.toggle("expanded", willExpand);
-        entryEl.classList.toggle("collapsed", !willExpand);
-        var chevronBtn = entryEl.querySelector(".chevron-btn");
-        if (chevronBtn) {
-          chevronBtn.setAttribute("aria-expanded", String(willExpand));
-          chevronBtn.setAttribute("aria-label", willExpand ? "Collapse" : "Expand");
-        }
-      }
+      if (expandedIds.has(id)) expandedIds.delete(id); else expandedIds.add(id);
+      render();
       return;
     }
 
