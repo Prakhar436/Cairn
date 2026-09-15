@@ -9,15 +9,15 @@
      TOKENS
      --------------------------------------------------------- */
   :root, [data-theme="dark"] {
-    --bg: #11201B;
-    --surface: #1B2C24;
-    --surface-2: #223528;
-    --border: #2C4034;
-    --text: #EDEDE3;
-    --text-muted: #93A79A;
+    --bg: #121316;
+    --surface: #1C1E22;
+    --surface-2: #262931;
+    --border: #33363D;
+    --text: #EDEDEF;
+    --text-muted: #9497A0;
     --accent: #5FB2D1;
     --accent-strong: #4FA3C4;
-    --accent-contrast: #06151A;
+    --accent-contrast: #0A1014;
     --danger: #D8574E;
     --danger-contrast: #2A100D;
     --pri-low: #7FBF8F;
@@ -26,18 +26,18 @@
     --pri-crit: #D8574E;
     --status-active: #5FB2D1;
     --status-completed: #7FBF8F;
-    --status-closed: #8B978F;
+    --status-closed: #8B8F94;
     --radius: 10px;
     --radius-sm: 6px;
   }
 
   [data-theme="light"] {
-    --bg: #EEF2EF;
+    --bg: #F0F0F1;
     --surface: #FFFFFF;
-    --surface-2: #E4EAE4;
-    --border: #D3DBD5;
-    --text: #16241D;
-    --text-muted: #55665C;
+    --surface-2: #E7E7E9;
+    --border: #D7D7DB;
+    --text: #18191C;
+    --text-muted: #5B5E66;
     --accent: #2C7A9E;
     --accent-strong: #226483;
     --accent-contrast: #FFFFFF;
@@ -49,7 +49,7 @@
     --pri-crit: #B0392F;
     --status-active: #2C7A9E;
     --status-completed: #3F8F58;
-    --status-closed: #6B7A70;
+    --status-closed: #6B6E75;
   }
 
   * { box-sizing: border-box; }
@@ -68,12 +68,20 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    body, .btn, .step-dot, .step-line, .panel, input, textarea { transition: background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .18s ease; }
+    body, .btn, .step-dot, .step-line, .panel, input, textarea {
+      transition: background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .18s ease;
+    }
+    .entry {
+      transition: background-color .25s ease, border-color .25s ease, border-radius .25s ease, margin-bottom .25s ease;
+    }
+    .details-wrap { transition: grid-template-rows .28s ease; }
+    .chevron-btn svg { transition: transform .2s ease; }
   }
 
   .wrap {
     max-width: 760px;
-    margin: 0 auto;
+    width: 100%;
+    flex-shrink: 0;
     padding: 28px 20px 90px;
   }
 
@@ -288,16 +296,16 @@
     padding: 0;
   }
   .chevron-btn:hover { background: var(--surface-2); color: var(--text); }
-  .chevron-btn svg { transition: transform .15s ease; }
   .entry.expanded .chevron-btn svg { transform: rotate(90deg); }
 
   .entry-summary {
-    display: flex;
+    display: none;
     align-items: baseline;
     gap: 10px;
     flex: 1;
     min-width: 0;
   }
+  .entry.collapsed .entry-summary { display: flex; }
   .summary-company {
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     font-weight: 600;
@@ -317,7 +325,8 @@
   }
   .notes-icon { color: var(--text-muted); flex-shrink: 0; display: inline-flex; }
 
-  .entry-fields { flex: 1; min-width: 0; }
+  .entry-fields { display: none; flex: 1; min-width: 0; }
+  .entry.expanded .entry-fields { display: block; }
 
   .row-badge {
     display: flex;
@@ -332,7 +341,13 @@
   }
   .row-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--row-color); }
 
-  .entry-details { padding: 0 14px 0 20px; }
+  .details-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+  .entry.expanded .details-wrap { grid-template-rows: 1fr; }
+  .details-inner { overflow: hidden; min-height: 0; }
+  .details-content { padding: 0 14px 18px 20px; }
 
   .company-input {
     font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -428,6 +443,114 @@
     color: var(--text-muted);
   }
 
+  /* ---------------------------------------------------------
+     PAGE LAYOUT + STICKY NOTES
+     --------------------------------------------------------- */
+  .page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 28px;
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  .rail {
+    display: none;
+    flex-direction: column;
+    gap: 18px;
+    width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 28px 4px 40px;
+  }
+  .rail::-webkit-scrollbar { width: 6px; }
+  .rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .sticky-note {
+    position: relative;
+    flex-shrink: 0;
+    background: #EDE0C4;
+    color: #3A2E1F;
+    border-radius: 2px 2px 6px 6px;
+    padding: 20px 14px 14px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+    transform: rotate(var(--tilt, 0deg));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sticky-note { transition: transform .15s ease, box-shadow .15s ease; }
+  }
+  .sticky-note:hover { transform: rotate(var(--tilt, 0deg)) translateY(-2px); box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.4) inset; }
+
+  .note-tape {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 52px;
+    height: 18px;
+    margin-left: -26px;
+    background: var(--tape, var(--accent));
+    opacity: 0.8;
+    transform: rotate(-2deg);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .note-done {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.08);
+    color: #3A2E1F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .note-done:hover { background: rgba(0, 0, 0, 0.18); }
+
+  .note-text {
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 0.92rem;
+    line-height: 1.42;
+    margin: 4px 0 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .note-meta {
+    display: block;
+    font-size: 0.7rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: rgba(58, 46, 31, 0.62);
+  }
+
+  .note-hint {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px 14px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .notes-inline {
+    display: none;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 6px 2px 22px;
+  }
+  .notes-inline .sticky-note { width: 200px; }
+
   @media (max-width: 520px) {
     .company-input, .url-input { width: 100%; max-width: 100%; }
     .entry-bottom { flex-direction: column; align-items: flex-start; }
@@ -439,7 +562,9 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
+  <aside class="rail" id="railLeft" aria-label="Pinned notes"></aside>
+  <div class="wrap">
 
   <header class="top">
     <div class="brand">
@@ -458,6 +583,10 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg>
       </button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
+      <button class="btn" id="addNoteBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Add note
+      </button>
       <button class="btn primary" id="newAppBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         New application
@@ -497,9 +626,26 @@
     </form>
   </div>
 
+  <div class="panel" id="newNotePanel">
+    <form id="newNoteForm">
+      <div class="field">
+        <label for="f-note-text">Sticky note</label>
+        <textarea id="f-note-text" placeholder="e.g. Apply to the Acme listing, or follow up with the Globex recruiter"></textarea>
+      </div>
+      <div class="panel-actions">
+        <button type="submit" class="btn primary">Pin note</button>
+        <button type="button" class="btn" id="cancelNoteBtn">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="notes-inline" id="notesInline"></div>
+
   <div id="sections"></div>
 
   <footer class="foot">Your data stays on this device — nothing is uploaded anywhere.</footer>
+  </div>
+  <aside class="rail" id="railRight" aria-label="Pinned notes"></aside>
 </div>
 
 <script>
@@ -518,6 +664,8 @@
   var ONE_DAY = 86400000;
   var RESET_STAGE_NAME = "Follow up with HR";
   var expandedIds = new Set();
+  var NOTE_TAPE_COLORS = ["var(--accent)", "var(--pri-low)", "var(--pri-med)", "var(--pri-high)"];
+  var NOTES_RAIL_BREAKPOINT = 1360;
 
   /* ---------------------------------------------------------
      ICONS
@@ -546,6 +694,9 @@
   function iconTrail() {
     return '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l6-14 4 8 3-6 5 12"/></svg>';
   }
+  function iconCheck() {
+    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  }
 
   /* ---------------------------------------------------------
      STORAGE
@@ -564,7 +715,7 @@
   }
 
   function defaultState() {
-    return { jobs: [], theme: "dark" };
+    return { jobs: [], theme: "dark", notes: [] };
   }
 
   function loadState() {
@@ -575,6 +726,7 @@
       var parsed = JSON.parse(raw);
       if (!parsed || !Array.isArray(parsed.jobs)) return defaultState();
       if (parsed.theme !== "light" && parsed.theme !== "dark") parsed.theme = "dark";
+      if (!Array.isArray(parsed.notes)) parsed.notes = [];
       return parsed;
     } catch (e) {
       return defaultState();
@@ -643,6 +795,15 @@
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }
 
+  // Small deterministic hash so a note's tilt/tape color stay stable across
+  // re-renders (and across being reshuffled between rails) without persisting
+  // extra fields — derived purely from its id.
+  function hashStr(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
   /* ---------------------------------------------------------
      THEME
      --------------------------------------------------------- */
@@ -682,6 +843,7 @@
   }
 
   newAppBtn.addEventListener("click", function () {
+    closeNotePanel();
     if (panel.classList.contains("open")) { closePanel(); } else { openPanel(); }
   });
   cancelAddBtn.addEventListener("click", closePanel);
@@ -728,6 +890,43 @@
   });
 
   /* ---------------------------------------------------------
+     STICKY NOTES — compose panel
+     --------------------------------------------------------- */
+  var notePanel = document.getElementById("newNotePanel");
+  var addNoteBtn = document.getElementById("addNoteBtn");
+  var cancelNoteBtn = document.getElementById("cancelNoteBtn");
+  var noteForm = document.getElementById("newNoteForm");
+
+  function openNotePanel() {
+    notePanel.classList.add("open");
+    document.getElementById("f-note-text").focus();
+  }
+  function closeNotePanel() {
+    notePanel.classList.remove("open");
+    noteForm.reset();
+  }
+
+  addNoteBtn.addEventListener("click", function () {
+    closePanel();
+    if (notePanel.classList.contains("open")) { closeNotePanel(); } else { openNotePanel(); }
+  });
+  cancelNoteBtn.addEventListener("click", closeNotePanel);
+
+  noteForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var textEl = document.getElementById("f-note-text");
+    var text = textEl.value.trim();
+    if (!text) {
+      textEl.focus();
+      return;
+    }
+    state.notes.push({ id: uid(), text: text, createdAt: Date.now() });
+    saveState();
+    closeNotePanel();
+    renderNotes();
+  });
+
+  /* ---------------------------------------------------------
      EXPORT / IMPORT
      --------------------------------------------------------- */
   document.getElementById("exportBtn").addEventListener("click", function () {
@@ -759,9 +958,11 @@
         if (!window.confirm("Importing will replace everything currently in your tracker. Continue?")) return;
         state = parsed;
         if (state.theme !== "light" && state.theme !== "dark") state.theme = "dark";
+        if (!Array.isArray(state.notes)) state.notes = [];
         saveState();
         applyTheme();
         render();
+        renderNotes();
       } catch (err) {
         window.alert("That file doesn't look like a Job Tracker backup.");
       }
@@ -775,6 +976,87 @@
   var sectionsEl = document.getElementById("sections");
   var statsLineEl = document.getElementById("statsLine");
   var noticeEl = document.getElementById("storageNotice");
+
+  /* ---------------------------------------------------------
+     STICKY NOTES — rendering
+     --------------------------------------------------------- */
+  var railLeftEl = document.getElementById("railLeft");
+  var railRightEl = document.getElementById("railRight");
+  var notesInlineEl = document.getElementById("notesInline");
+
+  function noteCardHtml(note) {
+    var tilt = (hashStr(note.id) % 7) - 3;
+    var tape = NOTE_TAPE_COLORS[hashStr(note.id + "t") % NOTE_TAPE_COLORS.length];
+    var d = daysSince(note.createdAt);
+    var whenText = d === 0 ? "Added today" : d === 1 ? "Added 1 day ago" : "Added " + d + " days ago";
+    return (
+      '<div class="sticky-note" style="--tilt:' + tilt + 'deg; --tape:' + tape + '" data-id="' + note.id + '">' +
+        '<span class="note-tape"></span>' +
+        '<button class="note-done" data-action="note-done" data-id="' + note.id + '" title="Mark done and unpin" aria-label="Mark done and unpin">' + iconCheck() + "</button>" +
+        '<p class="note-text">' + escapeHtml(note.text) + "</p>" +
+        '<span class="note-meta">' + whenText + "</span>" +
+      "</div>"
+    );
+  }
+
+  function noteHintHtml() {
+    return '<div class="note-hint">Pin a quick reminder here — "follow up with Globex," "apply before Friday," anything.</div>';
+  }
+
+  function handleNoteClick(e) {
+    var btn = e.target.closest('[data-action="note-done"]');
+    if (!btn) return;
+    var id = btn.getAttribute("data-id");
+    state.notes = state.notes.filter(function (n) { return n.id !== id; });
+    saveState();
+    renderNotes();
+  }
+  railLeftEl.addEventListener("click", handleNoteClick);
+  railRightEl.addEventListener("click", handleNoteClick);
+  notesInlineEl.addEventListener("click", handleNoteClick);
+
+  function renderNotes() {
+    var notes = state.notes.slice().sort(function (a, b) { return b.createdAt - a.createdAt; });
+    var wide = window.matchMedia("(min-width: " + NOTES_RAIL_BREAKPOINT + "px)").matches;
+
+    if (wide) {
+      notesInlineEl.style.display = "none";
+      notesInlineEl.innerHTML = "";
+      railLeftEl.style.display = "flex";
+      railRightEl.style.display = "flex";
+
+      if (notes.length === 0) {
+        railLeftEl.innerHTML = "";
+        railRightEl.innerHTML = noteHintHtml();
+        return;
+      }
+      var leftHtml = "", rightHtml = "";
+      notes.forEach(function (note, i) {
+        if (i % 2 === 0) leftHtml += noteCardHtml(note); else rightHtml += noteCardHtml(note);
+      });
+      railLeftEl.innerHTML = leftHtml;
+      railRightEl.innerHTML = rightHtml;
+    } else {
+      railLeftEl.style.display = "none";
+      railRightEl.style.display = "none";
+      railLeftEl.innerHTML = "";
+      railRightEl.innerHTML = "";
+
+      if (notes.length === 0) {
+        notesInlineEl.style.display = "none";
+        notesInlineEl.innerHTML = "";
+      } else {
+        notesInlineEl.style.display = "flex";
+        notesInlineEl.innerHTML = notes.map(noteCardHtml).join("");
+      }
+    }
+  }
+
+  var notesResizeTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(notesResizeTimer);
+    notesResizeTimer = setTimeout(renderNotes, 150);
+  });
 
   function stepperHtml(job) {
     var steps = WORKFLOWS[job.workflow];
@@ -835,65 +1117,59 @@
     var chevron = '<button class="chevron-btn" data-action="toggle" data-id="' + job.id + '" aria-label="' + (expanded ? "Collapse" : "Expand") + '" aria-expanded="' + expanded + '">' + iconChevronRight() + "</button>";
     var badgeHtml = '<div class="row-badge"><span class="dot"></span>' + escapeHtml(badgeText) + "</div>";
 
-    var middleHtml;
-    if (expanded) {
-      middleHtml =
-        '<div class="entry-fields">' +
-          '<input class="company-input" data-field="company" data-id="' + job.id + '" value="' + escapeHtml(job.company) + '" placeholder="Company name" aria-label="Company name">' +
-          '<div class="url-row">' +
-            iconExternal() +
-            '<input class="url-input" data-field="url" data-id="' + job.id + '" value="' + escapeHtml(urlDisplay) + '" placeholder="Add a link to the posting" aria-label="Job posting URL">' +
-            (job.url ? '<a class="open-link" href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener noreferrer" title="Open link" aria-label="Open link">' + iconExternal() + "</a>" : "") +
-          "</div>" +
-        "</div>";
-    } else {
-      middleHtml =
-        '<div class="entry-summary">' +
-          '<span class="summary-company">' + escapeHtml(job.company || "Untitled") + "</span>" +
-          '<span class="summary-stage">' + escapeHtml(currentLabel) + "</span>" +
-          (job.notes ? '<span class="notes-icon" title="Has notes">' + iconNote() + "</span>" : "") +
-        "</div>";
-    }
+    var summaryHtml =
+      '<div class="entry-summary">' +
+        '<span class="summary-company">' + escapeHtml(job.company || "Untitled") + "</span>" +
+        '<span class="summary-stage">' + escapeHtml(currentLabel) + "</span>" +
+        (job.notes ? '<span class="notes-icon" title="Has notes">' + iconNote() + "</span>" : "") +
+      "</div>";
+
+    var fieldsHtml =
+      '<div class="entry-fields">' +
+        '<input class="company-input" data-field="company" data-id="' + job.id + '" value="' + escapeHtml(job.company) + '" placeholder="Company name" aria-label="Company name">' +
+        '<div class="url-row">' +
+          iconExternal() +
+          '<input class="url-input" data-field="url" data-id="' + job.id + '" value="' + escapeHtml(urlDisplay) + '" placeholder="Add a link to the posting" aria-label="Job posting URL">' +
+          (job.url ? '<a class="open-link" href="' + escapeHtml(job.url) + '" target="_blank" rel="noopener noreferrer" title="Open link" aria-label="Open link">' + iconExternal() + "</a>" : "") +
+        "</div>" +
+      "</div>";
 
     var headerClass = "entry-header" + (expanded ? "" : " clickable");
     var headerAttrs = expanded ? "" : (' data-action="toggle" data-id="' + job.id + '"');
-    var headerHtml = '<div class="' + headerClass + '"' + headerAttrs + ">" + chevron + middleHtml + badgeHtml + "</div>";
+    var headerHtml = '<div class="' + headerClass + '"' + headerAttrs + ">" + chevron + summaryHtml + fieldsHtml + badgeHtml + "</div>";
 
-    var detailsHtml = "";
-    if (expanded) {
-      var navButtons = "";
-      if (isActive) {
-        navButtons =
-          '<div class="nav-actions">' +
-            '<button class="btn" data-action="prev" data-id="' + job.id + '" ' + (atStart ? "disabled" : "") + '>' + iconChevronLeft() + " Back</button>" +
-            '<button class="btn" data-action="next" data-id="' + job.id + '" ' + (atEnd ? "disabled" : "") + ">Next " + iconChevronRight() + "</button>" +
-          "</div>";
-      } else {
-        navButtons = '<div class="nav-actions"><button class="btn ghost" data-action="reopen" data-id="' + job.id + '">Reopen application</button></div>';
-      }
-
-      var terminalButtons = "";
-      if (isActive) {
-        terminalButtons =
-          '<button class="btn ghost" data-action="complete" data-id="' + job.id + '">Mark as completed</button>' +
-          '<button class="btn ghost" data-action="close" data-id="' + job.id + '">Close application</button>';
-      }
-
-      detailsHtml =
-        '<div class="entry-details">' +
-          stepperHtml(job) +
-          '<div class="step-caption">' + WORKFLOW_LABEL[job.workflow] + ", currently <strong>" + escapeHtml(currentLabel) + "</strong> (step " + (job.stepIndex + 1) + " of " + steps.length + ")</div>" +
-          '<textarea class="notes-input" data-field="notes" data-id="' + job.id + '" placeholder="Add a note...">' + escapeHtml(job.notes || "") + "</textarea>" +
-          '<div class="entry-bottom">' +
-            navButtons +
-            '<div class="meta-actions">' +
-              '<span class="meta-text">' + metaText + "</span>" +
-              terminalButtons +
-              '<button class="btn danger-ghost" data-action="delete" data-id="' + job.id + '" title="Delete" aria-label="Delete application">' + iconTrash() + "</button>" +
-            "</div>" +
-          "</div>" +
+    var navButtons = "";
+    if (isActive) {
+      navButtons =
+        '<div class="nav-actions">' +
+          '<button class="btn" data-action="prev" data-id="' + job.id + '" ' + (atStart ? "disabled" : "") + '>' + iconChevronLeft() + " Back</button>" +
+          '<button class="btn" data-action="next" data-id="' + job.id + '" ' + (atEnd ? "disabled" : "") + ">Next " + iconChevronRight() + "</button>" +
         "</div>";
+    } else {
+      navButtons = '<div class="nav-actions"><button class="btn ghost" data-action="reopen" data-id="' + job.id + '">Reopen application</button></div>';
     }
+
+    var terminalButtons = "";
+    if (isActive) {
+      terminalButtons =
+        '<button class="btn ghost" data-action="complete" data-id="' + job.id + '">Mark as completed</button>' +
+        '<button class="btn ghost" data-action="close" data-id="' + job.id + '">Close application</button>';
+    }
+
+    var detailsHtml =
+      '<div class="details-wrap"><div class="details-inner"><div class="details-content">' +
+        stepperHtml(job) +
+        '<div class="step-caption">' + WORKFLOW_LABEL[job.workflow] + ", currently <strong>" + escapeHtml(currentLabel) + "</strong> (step " + (job.stepIndex + 1) + " of " + steps.length + ")</div>" +
+        '<textarea class="notes-input" data-field="notes" data-id="' + job.id + '" placeholder="Add a note...">' + escapeHtml(job.notes || "") + "</textarea>" +
+        '<div class="entry-bottom">' +
+          navButtons +
+          '<div class="meta-actions">' +
+            '<span class="meta-text">' + metaText + "</span>" +
+            terminalButtons +
+            '<button class="btn danger-ghost" data-action="delete" data-id="' + job.id + '" title="Delete" aria-label="Delete application">' + iconTrash() + "</button>" +
+          "</div>" +
+        "</div>" +
+      "</div></div></div>";
 
     return (
       '<div class="entry ' + (expanded ? "expanded" : "collapsed") + '" data-id="' + job.id + '" style="--row-color:' + rowColor + '">' +
@@ -973,8 +1249,30 @@
     var action = btn.getAttribute("data-action");
 
     if (action === "toggle") {
-      if (expandedIds.has(id)) expandedIds.delete(id); else expandedIds.add(id);
-      render();
+      var willExpand = !expandedIds.has(id);
+      if (willExpand) expandedIds.add(id); else expandedIds.delete(id);
+
+      var entryEl = btn.closest(".entry");
+      if (entryEl) {
+        entryEl.classList.toggle("expanded", willExpand);
+        entryEl.classList.toggle("collapsed", !willExpand);
+        var headerEl = entryEl.querySelector(".entry-header");
+        if (headerEl) {
+          headerEl.classList.toggle("clickable", !willExpand);
+          if (willExpand) {
+            headerEl.removeAttribute("data-action");
+            headerEl.removeAttribute("data-id");
+          } else {
+            headerEl.setAttribute("data-action", "toggle");
+            headerEl.setAttribute("data-id", id);
+          }
+        }
+        var chevronBtn = entryEl.querySelector(".chevron-btn");
+        if (chevronBtn) {
+          chevronBtn.setAttribute("aria-expanded", String(willExpand));
+          chevronBtn.setAttribute("aria-label", willExpand ? "Collapse" : "Expand");
+        }
+      }
       return;
     }
 
@@ -1050,6 +1348,7 @@
   if (!storageAvailable) noticeEl.classList.add("show");
   applyTheme();
   render();
+  renderNotes();
 })();
 </script>
 </body>
